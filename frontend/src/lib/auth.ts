@@ -1,5 +1,5 @@
 export type UserRole = "JOB_SEEKER" | "ORG_ADMIN" | "ORG_COACH" | "PLATFORM_ADMIN" | "MEMBER";
-export type Plan = "FREE" | "PRO" | "ORGANIZATION";
+export type Plan = "FREE" | "PRO" | "PREMIUM" | "ORGANIZATION";
 
 export interface AuthUser {
   id: string;

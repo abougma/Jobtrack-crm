@@ -10,6 +10,12 @@ export interface AdminOverview {
   usersByPlan: { plan: Plan; users: number }[];
 }
 
+export interface AdminRevenue {
+  paidAmountCents: number;
+  paidTransactions: number;
+  pendingTransactions: number;
+}
+
 export interface AdminUser {
   id: string;
   email: string;

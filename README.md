@@ -170,12 +170,15 @@ d'organisation restent portés par `OrganizationMembership`.
 
 ```text
 GET   /api/v1/admin/overview
+GET   /api/v1/admin/revenue
 GET   /api/v1/admin/users?query=&plan=&role=&page=&size=
 POST  /api/v1/admin/users             # { "email", "password", "role" } → 201
 GET   /api/v1/admin/users/{id}
 PATCH /api/v1/admin/users/{id}/plan   # { "plan": "FREE" | "PRO" | "ORGANIZATION" }
 PATCH /api/v1/admin/users/{id}/role   # { "role": "JOB_SEEKER" | "PLATFORM_ADMIN" }
 GET   /api/v1/admin/organizations?query=&page=&size=
+POST  /api/v1/plan/checkout           # { "plan": "PRO" | "PREMIUM" } → Stripe Checkout URL
+POST  /api/v1/payments/stripe/webhook # Stripe checkout.session.completed
 ```
 
 ## Variables d'environnement
@@ -192,6 +195,8 @@ GET   /api/v1/admin/organizations?query=&page=&size=
 | `CORS_ORIGIN` | `http://localhost:5173` | Origines autorisées (séparées par des virgules) |
 | `VITE_API_URL` | `/api/v1` | Base URL de l'API côté frontend |
 | `JOBTRACK_ADMIN_EMAILS` | vide | E-mails promus `PLATFORM_ADMIN` (liste séparée par des virgules) |
+| `STRIPE_SECRET_KEY` | vide | Clé secrète Stripe (`sk_test_...` en développement) |
+| `STRIPE_WEBHOOK_SECRET` | vide | Secret de signature du webhook Stripe (`whsec_...`) |
 
 ## Structure du dépôt
 
@@ -205,8 +210,11 @@ docs/       Contrat d'API et architecture
 ## Limites connues
 
 - Les assistants CV/entretien sont des heuristiques locales, pas un LLM.
-- Les plans `PRO` / `ORGANIZATION` ne sont pas facturés : le plan est stocké,
-  les quotas restent ceux du plan `FREE` tant qu'aucune intégration de paiement
-  n'existe.
+- Les upgrades `PRO` et `PREMIUM` passent par Stripe Checkout et ne sont activés
+  qu'après réception du webhook signé `checkout.session.completed`.
+- La console `PLATFORM_ADMIN` peut attribuer manuellement un plan à un compte et
+  consulter les paiements confirmés, les paiements en attente et le chiffre
+  d'affaires encaissé. Cette attribution manuelle est prévue pour le support et
+  ne constitue pas une preuve de paiement.
 - Les notifications (e-mail, push) ne sont pas envoyées ; les rappels sont
   consultés dans l'application.

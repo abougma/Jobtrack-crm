@@ -4,6 +4,7 @@ import {
   createAdminUser,
   fetchAdminOrganizations,
   fetchAdminOverview,
+  fetchAdminRevenue,
   fetchAdminUser,
   fetchAdminUsers,
   updateAdminUserPlan,
@@ -15,6 +16,14 @@ export function useAdminOverviewQuery() {
   return useQuery({
     queryKey: queryKeys.admin.overview,
     queryFn: fetchAdminOverview,
+    staleTime: 30_000,
+  });
+}
+
+export function useAdminRevenueQuery() {
+  return useQuery({
+    queryKey: [...queryKeys.admin.overview, "revenue"],
+    queryFn: fetchAdminRevenue,
     staleTime: 30_000,
   });
 }

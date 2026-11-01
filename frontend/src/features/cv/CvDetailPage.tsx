@@ -93,7 +93,8 @@ export function CvDetailPage() {
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="p-5 lg:col-span-2">
-          <CardHeader title={cv.headline ?? t("cv.detail.headline")} description={cv.summary ?? undefined} />
+          <CardHeader title={cv.fullName ?? cv.headline ?? t("cv.detail.headline")} description={cv.summary ?? undefined} />
+          {cv.location && <p className="mt-1 text-xs text-muted">{cv.location}</p>}
           <div className="mt-4 space-y-5">
             {cv.skills.length > 0 && (
               <section>

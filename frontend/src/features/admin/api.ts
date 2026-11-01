@@ -6,6 +6,7 @@ import type {
   AdminUser,
   AdminUserDetail,
   AdminUserFilters,
+  AdminRevenue,
   Page,
 } from "./types";
 
@@ -22,6 +23,10 @@ function queryString(params: Record<string, unknown>): string {
 
 export function fetchAdminOverview(): Promise<AdminOverview> {
   return apiRequest<AdminOverview>("/admin/overview");
+}
+
+export function fetchAdminRevenue(): Promise<AdminRevenue> {
+  return apiRequest<AdminRevenue>("/admin/revenue");
 }
 
 export function fetchAdminUsers(filters: AdminUserFilters): Promise<Page<AdminUser>> {

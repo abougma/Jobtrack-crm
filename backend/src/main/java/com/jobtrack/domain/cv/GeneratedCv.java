@@ -9,6 +9,8 @@ public record GeneratedCv(
         UUID userId,
         UUID applicationId,
         String title,
+        String fullName,
+        String location,
         String headline,
         String summary,
         List<String> skills,

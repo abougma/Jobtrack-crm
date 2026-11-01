@@ -36,7 +36,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/auth/**", "/api/v1/health", "/actuator/health/**",
-                                "/api/v1/docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                                "/api/v1/docs/**", "/swagger-ui/**", "/swagger-ui.html",
+                                "/api/v1/payments/stripe/webhook").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("PLATFORM_ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(handling -> handling

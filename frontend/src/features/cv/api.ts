@@ -4,6 +4,7 @@ import type {
   CvAnalyzePayload,
   CvExportFormat,
   CvGeneratePayload,
+  CvProfileGeneratePayload,
   CvSummary,
   GeneratedCv,
 } from "./types";
@@ -14,6 +15,10 @@ export function analyzeCv(payload: CvAnalyzePayload): Promise<CvAnalysis> {
 
 export function generateCv(payload: CvGeneratePayload): Promise<GeneratedCv> {
   return apiRequest<GeneratedCv>("/cv/generate", { method: "POST", body: payload });
+}
+
+export function generateCvFromProfile(payload: CvProfileGeneratePayload): Promise<GeneratedCv> {
+  return apiRequest<GeneratedCv>("/cv/generate-from-profile", { method: "POST", body: payload });
 }
 
 export function fetchCvs(): Promise<CvSummary[]> {

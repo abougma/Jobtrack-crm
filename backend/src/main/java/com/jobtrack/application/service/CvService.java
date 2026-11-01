@@ -58,6 +58,26 @@ public class CvService {
         return cvs.save(generated);
     }
 
+    @Transactional
+    public GeneratedCv generateFromProfile(UUID userId, String title, String fullName,
+                                           String location, String summary) {
+        quotas.consumeCvAnalysis(userId);
+        ProfileSnapshot profile = profiles.load(userId);
+        CvAnalysis analysis = assistant.analyze(profile, "");
+        String headline = userProfiles.findById(userId).map(UserProfile::headline)
+                .filter(value -> value != null && !value.isBlank()).orElse(null);
+        GeneratedCv generated = assistant.generate(userId, null, title.trim(), headline, profile, "", analysis);
+        return cvs.save(new GeneratedCv(generated.id(), generated.userId(), generated.applicationId(),
+                generated.title(), fullName.trim(), location == null ? null : location.trim(),
+                generated.headline(), summary.trim(), limit(generated.skills(), 14), limit(generated.experiences(), 5),
+                limit(generated.projects(), 3), limit(generated.educations(), 3), List.of(),
+                generated.score(), generated.createdAt()));
+    }
+
+    private <T> List<T> limit(List<T> values, int max) {
+        return values.size() <= max ? values : values.subList(0, max);
+    }
+
     @Transactional(readOnly = true)
     public List<CvSummary> list(UUID userId) {
         return cvs.findAllByUserId(userId);

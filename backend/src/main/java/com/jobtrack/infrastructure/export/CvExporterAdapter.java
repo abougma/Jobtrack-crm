@@ -34,7 +34,9 @@ public class CvExporterAdapter implements CvExporter {
 
     private byte[] docx(GeneratedCv cv) {
         try (XWPFDocument document = new XWPFDocument(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            addDocxParagraph(document, cv.title(), true, 20);
+            addDocxParagraph(document, cv.fullName(), true, 20);
+            addDocxParagraph(document, cv.location(), false, 10);
+            addDocxParagraph(document, cv.title(), true, 14);
             addDocxParagraph(document, cv.headline(), true, 14);
             addDocxParagraph(document, cv.summary(), false, 10);
             addDocxHeading(document, "Compétences");
@@ -62,12 +64,6 @@ public class CvExporterAdapter implements CvExporter {
                     addDocxParagraph(document, period(education.startedOn(), education.endedOn()), false, 9);
                 }
             }
-            if (!cv.missingInformation().isEmpty()) {
-                addDocxHeading(document, "À compléter");
-                for (String missing : cv.missingInformation()) {
-                    addDocxParagraph(document, "• " + missing, false, 10);
-                }
-            }
             document.write(out);
             return out.toByteArray();
         } catch (Exception exception) {
@@ -86,7 +82,9 @@ public class CvExporterAdapter implements CvExporter {
             Font normal = FontFactory.getFont(FontFactory.HELVETICA, 10);
             Font small = FontFactory.getFont(FontFactory.HELVETICA, 9);
 
-            document.add(new Paragraph(cv.title(), title));
+            document.add(new Paragraph(cv.fullName(), title));
+            if (cv.location() != null && !cv.location().isBlank()) document.add(new Paragraph(cv.location(), small));
+            document.add(new Paragraph(cv.title(), bold));
             document.add(new Paragraph(cv.headline(), bold));
             document.add(new Paragraph(cv.summary(), normal));
             document.add(new Paragraph(" "));
@@ -115,12 +113,6 @@ public class CvExporterAdapter implements CvExporter {
                     document.add(new Paragraph(period(education.startedOn(), education.endedOn()), small));
                 }
             }
-            if (!cv.missingInformation().isEmpty()) {
-                document.add(new Paragraph("À compléter", heading));
-                for (String missing : cv.missingInformation()) {
-                    document.add(new Paragraph("• " + missing, normal));
-                }
-            }
             document.close();
             return out.toByteArray();
         } catch (Exception exception) {
@@ -130,6 +122,8 @@ public class CvExporterAdapter implements CvExporter {
 
     private String text(GeneratedCv cv) {
         StringBuilder builder = new StringBuilder();
+        builder.append(cv.fullName()).append("\n");
+        if (cv.location() != null && !cv.location().isBlank()) builder.append(cv.location()).append("\n");
         builder.append(cv.title()).append("\n");
         builder.append(cv.headline()).append("\n\n");
         builder.append(cv.summary()).append("\n\n");
@@ -157,10 +151,6 @@ public class CvExporterAdapter implements CvExporter {
                 builder.append(period(education.startedOn(), education.endedOn())).append("\n");
             }
             builder.append("\n");
-        }
-        if (!cv.missingInformation().isEmpty()) {
-            builder.append("À COMPLÉTER\n");
-            cv.missingInformation().forEach(missing -> builder.append("• ").append(missing).append("\n"));
         }
         return builder.toString();
     }

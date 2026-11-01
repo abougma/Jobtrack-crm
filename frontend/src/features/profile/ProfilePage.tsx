@@ -1,5 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent, type ReactElement } from "react";
 import { CalendarDays, Fingerprint, ShieldCheck, UserRound } from "lucide-react";
+import { Link } from "react-router-dom";
 import { errorMessage } from "../../lib/api";
 import { useI18n } from "../../lib/i18n";
 import { Button } from "../../components/ui/Button";
@@ -12,6 +13,8 @@ import { useAuth } from "../auth/AuthProvider";
 import { CollectionSection } from "./CollectionSection";
 import { useProfileQuery, useUpdateIdentityMutation } from "./hooks";
 import { PROFILE_SECTIONS } from "./profileFields";
+import { useChangePlanMutation } from "../settings/hooks";
+import type { Plan } from "../../lib/auth";
 
 export function ProfilePage() {
   const { t } = useI18n();
@@ -21,7 +24,7 @@ export function ProfilePage() {
   return (
     <div className="space-y-5">
       <Card className="p-5">
-        <CardHeader title={t("profile.subtitle")} />
+        <CardHeader title={t("profile.subtitle")} action={<Link to="/cv" className="rounded-lg bg-primary-600 px-3 py-2 text-xs font-semibold text-white hover:bg-primary-700">{t("profile.generateCv")}</Link>} />
         <p className="mt-3 flex items-start gap-2 rounded-lg bg-primary-50 px-3 py-2 text-xs text-primary-800 dark:bg-primary-900/30 dark:text-primary-100">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
           {t("profile.guardrail")}
@@ -30,6 +33,7 @@ export function ProfilePage() {
 
       {user && <IdentityForm key={user.id} />}
       {user && <AccountInformation user={user} items={profileQuery.data} />}
+      {user && <PlanUpgrade currentPlan={user.plan} />}
 
       {profileQuery.isLoading ? (
         <Spinner fullPage />
@@ -57,6 +61,58 @@ export function ProfilePage() {
         </div>
       )}
     </div>
+  );
+}
+
+function PlanUpgrade({ currentPlan }: { currentPlan: string }) {
+  const { t } = useI18n();
+  const { push } = useToast();
+  const mutation = useChangePlanMutation();
+  const plans: { id: Plan; price: string }[] = [
+    { id: "FREE", price: "0 €" },
+    { id: "PRO", price: "9,99 € / mois" },
+    { id: "PREMIUM", price: "19,99 € / mois" },
+  ];
+
+  return (
+    <Card className="p-5">
+      <CardHeader title={t("profile.plan.title")} description={t("profile.plan.subtitle")} />
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        {plans.map((plan) => (
+          <div
+            key={plan.id}
+            className={`rounded-xl border p-4 ${
+              currentPlan === plan.id
+                ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+                : "border-border"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <strong>{t(`profile.plan.${plan.id}` as Parameters<typeof t>[0])}</strong>
+              {currentPlan === plan.id && (
+                <span className="text-xs text-primary-700">{t("profile.plan.current")}</span>
+              )}
+            </div>
+            <p className="mt-2 text-sm text-muted">{plan.price}</p>
+            <Button
+              className="mt-4 w-full"
+              variant={currentPlan === plan.id ? "outline" : "primary"}
+              disabled={currentPlan === plan.id}
+              loading={mutation.isPending}
+              onClick={() =>
+                mutation.mutate(plan.id, {
+                  onSuccess: () => push(t("profile.plan.updated"), "success"),
+                  onError: () => push(t("errors.saveFailed"), "error"),
+                })
+              }
+            >
+              {currentPlan === plan.id ? t("profile.plan.current") : t("profile.plan.choose")}
+            </Button>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 text-xs text-muted">{t("profile.plan.billingNote")}</p>
+    </Card>
   );
 }
 

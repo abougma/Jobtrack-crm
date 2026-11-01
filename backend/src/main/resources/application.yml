@@ -33,6 +33,9 @@ jobtrack:
     access-token-minutes: ${JWT_ACCESS_TOKEN_MINUTES:15}
     refresh-token-days: ${JWT_REFRESH_TOKEN_DAYS:30}
     cors-origin: ${CORS_ORIGIN:http://localhost:5173}
+  stripe:
+    secret-key: ${STRIPE_SECRET_KEY:}
+    webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
 
 management:
   endpoints:

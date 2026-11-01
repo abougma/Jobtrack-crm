@@ -34,6 +34,8 @@ export interface GeneratedCv {
   userId?: string;
   applicationId: string | null;
   title: string;
+  fullName: string | null;
+  location: string | null;
   headline: string | null;
   summary: string | null;
   skills: string[];
@@ -60,6 +62,13 @@ export interface CvAnalyzePayload {
 
 export interface CvGeneratePayload extends CvAnalyzePayload {
   title?: string | null;
+}
+
+export interface CvProfileGeneratePayload {
+  title: string;
+  fullName: string;
+  location?: string | null;
+  summary: string;
 }
 
 export type CvExportFormat = "docx" | "pdf" | "txt";

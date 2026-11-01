@@ -25,6 +25,11 @@ vi.mock("./hooks", () => ({
     isError: false,
     refetch,
   }),
+  useAdminRevenueQuery: () => ({
+    data: { paidAmountCents: 0, paidTransactions: 0, pendingTransactions: 0 },
+    isLoading: false,
+    isError: false,
+  }),
   useAdminUsersQuery: () => ({
     data: {
       content: [

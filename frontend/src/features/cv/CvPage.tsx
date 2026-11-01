@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Download, FileText, Sparkles, Trash2 } from "lucide-react";
 import { errorMessage } from "../../lib/api";
@@ -17,6 +17,7 @@ import { Spinner } from "../../components/ui/Spinner";
 import { Tabs } from "../../components/ui/Tabs";
 import { Textarea } from "../../components/ui/Textarea";
 import { useToast } from "../../components/ui/toast-context";
+import { useAuth } from "../auth/AuthProvider";
 import { DEFAULT_FILTERS } from "../applications/filters";
 import { useApplicationsQuery } from "../applications/hooks";
 import { exportCv } from "./api";
@@ -25,6 +26,7 @@ import {
   useCvListQuery,
   useDeleteCvMutation,
   useGenerateCvMutation,
+  useGenerateCvFromProfileMutation,
 } from "./hooks";
 import type { CvAnalysis, CvExportFormat, CvSummary } from "./types";
 
@@ -33,6 +35,7 @@ type CvTab = "analyze" | "list";
 export function CvPage() {
   const { t, language } = useI18n();
   const { push } = useToast();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState<CvTab>("analyze");
   const [offerText, setOfferText] = useState("");
@@ -41,12 +44,29 @@ export function CvPage() {
   const [analysis, setAnalysis] = useState<CvAnalysis | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<CvSummary | null>(null);
+  const [profileTitle, setProfileTitle] = useState("CV — Profil professionnel");
+  const [profileName, setProfileName] = useState("");
+  const [profileLocation, setProfileLocation] = useState("");
+  const [profileSummary, setProfileSummary] = useState("");
 
   const applicationsQuery = useApplicationsQuery({ ...DEFAULT_FILTERS, size: 200 }, true);
   const analyzeMutation = useAnalyzeCvMutation();
   const generateMutation = useGenerateCvMutation();
+  const profileGenerateMutation = useGenerateCvFromProfileMutation();
   const deleteMutation = useDeleteCvMutation();
   const listQuery = useCvListQuery();
+
+  useEffect(() => {
+    if (!user) return;
+    const name = [user.firstName, user.lastName].filter(Boolean).join(" ");
+    setProfileName(name);
+    setProfileLocation(user.location ?? "");
+    setProfileSummary(
+      user.headline
+        ? `${user.headline}. Profil professionnel orienté vers des réalisations concrètes et une progression continue.`
+        : "Professionnel motivé, prêt à mettre ses compétences et ses expériences au service d'une nouvelle équipe.",
+    );
+  }, [user]);
 
   const applicationOptions = (applicationsQuery.data?.content ?? []).map((application) => ({
     value: application.id,
@@ -87,6 +107,29 @@ export function CvPage() {
     );
   };
 
+  const handleGenerateFromProfile = () => {
+    if (!profileName.trim() || !profileSummary.trim()) {
+      setFormError(t("cv.profile.required"));
+      return;
+    }
+    setFormError(null);
+    profileGenerateMutation.mutate(
+      {
+        title: profileTitle.trim() || "CV — Profil professionnel",
+        fullName: profileName.trim(),
+        location: profileLocation.trim() || null,
+        summary: profileSummary.trim(),
+      },
+      {
+        onSuccess: (cv) => {
+          push(t("cv.generated"), "success");
+          navigate(`/cv/${cv.id}`);
+        },
+        onError: (error) => setFormError(errorMessage(error, t("errors.saveFailed"))),
+      },
+    );
+  };
+
   const handleExport = async (id: string, format: CvExportFormat) => {
     try {
       const file = await exportCv(id, format);
@@ -109,6 +152,23 @@ export function CvPage() {
 
   return (
     <div className="space-y-5">
+      <Card className="p-5">
+        <CardHeader title={t("cv.profile.title")} description={t("cv.profile.description")} />
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <Input label={t("cv.profile.titleField")} value={profileTitle} onChange={(event) => setProfileTitle(event.target.value)} />
+          <Input label={t("cv.profile.name")} value={profileName} onChange={(event) => setProfileName(event.target.value)} />
+          <Input label={t("cv.profile.location")} value={profileLocation} onChange={(event) => setProfileLocation(event.target.value)} />
+          <Textarea label={t("cv.profile.summary")} value={profileSummary} onChange={(event) => setProfileSummary(event.target.value)} rows={3} required />
+        </div>
+        <p className="mt-3 text-xs text-muted">{t("cv.profile.atsNote")}</p>
+        {formError && <p role="alert" className="mt-3 text-xs font-medium text-rose-600 dark:text-rose-400">{formError}</p>}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Button onClick={handleGenerateFromProfile} loading={profileGenerateMutation.isPending}>
+            {profileGenerateMutation.isPending ? t("cv.generating") : t("cv.profile.generate")}
+          </Button>
+          <Button variant="outline" onClick={() => setTab("list")}>{t("cv.profile.viewSaved")}</Button>
+        </div>
+      </Card>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-sm text-muted">{t("cv.subtitle")}</p>

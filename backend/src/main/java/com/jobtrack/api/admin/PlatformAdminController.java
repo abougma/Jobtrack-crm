@@ -38,6 +38,11 @@ public class PlatformAdminController {
         return service.overview();
     }
 
+    @GetMapping("/revenue")
+    public com.jobtrack.application.service.PaymentService.RevenueView revenue() {
+        return service.revenue();
+    }
+
     @GetMapping("/users")
     public Page<PlatformAdminService.AdminUserView> users(
             @RequestParam(required = false) String query,

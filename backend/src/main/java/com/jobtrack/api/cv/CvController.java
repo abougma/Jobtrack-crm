@@ -44,6 +44,14 @@ public class CvController {
                 request.title());
     }
 
+    @PostMapping("/generate-from-profile")
+    @ResponseStatus(HttpStatus.CREATED)
+    public GeneratedCv generateFromProfile(@AuthenticationPrincipal String userId,
+                                           @Valid @RequestBody ProfileGenerateRequest request) {
+        return service.generateFromProfile(UUID.fromString(userId), request.title(), request.fullName(),
+                request.location(), request.summary());
+    }
+
     @GetMapping
     public List<CvSummary> list(@AuthenticationPrincipal String userId) {
         return service.list(UUID.fromString(userId));
@@ -82,4 +90,10 @@ public class CvController {
 
     public record GenerateRequest(@NotBlank @Size(max = 50_000) String offerText, UUID applicationId,
                                   @Size(max = 255) String title) {}
+
+    public record ProfileGenerateRequest(
+            @NotBlank @Size(max = 1_000) String title,
+            @NotBlank @Size(max = 255) String fullName,
+            @Size(max = 255) String location,
+            @NotBlank @Size(max = 2_000) String summary) {}
 }

@@ -99,6 +99,34 @@ export function LandingPage() {
           </article>
         ))}
       </section>
+      <section className="mx-auto max-w-7xl px-5 pb-20 sm:px-8">
+        <div className="mb-8 text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary-600">{t("landing.pricingEyebrow")}</p>
+          <h2 className="mt-3 font-display text-3xl font-semibold text-fg">{t("landing.pricingTitle")}</h2>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {([
+            ["FREE", "0 €", t("landing.priceFree"), false],
+            ["PRO", "9,99 €", t("landing.pricePro"), true],
+            ["PREMIUM", "19,99 €", t("landing.pricePremium"), false],
+          ] as const).map(([name, price, description, featured]) => (
+            <article key={name} className={`rounded-2xl border p-6 ${featured ? "border-primary-500 bg-primary-50 shadow-lg dark:bg-primary-900/20" : "border-border bg-surface"}`}>
+              {featured && <span className="rounded-full bg-primary-600 px-2 py-1 text-[10px] font-bold uppercase text-white">{t("landing.popular")}</span>}
+              <h3 className="mt-3 font-display text-xl font-semibold text-fg">{name}</h3>
+              <p className="mt-2 text-sm text-muted">{description}</p>
+              <p className="mt-5 font-display text-3xl font-bold text-fg">{price}<small className="ml-1 text-xs font-normal text-muted">{name === "FREE" ? "" : t("landing.perMonth")}</small></p>
+              <Link to={isAuthenticated ? "/profile" : "/register"} className="mt-5 inline-flex w-full justify-center rounded-lg border border-border px-4 py-2.5 text-sm font-semibold text-fg hover:bg-elevated">{isAuthenticated ? t("landing.choosePlan") : t("landing.start")}</Link>
+            </article>
+          ))}
+        </div>
+      </section>
+      <footer className="border-t border-border bg-surface px-5 py-8 sm:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+          <span>© {new Date().getFullYear()} JobTrack</span>
+          <span>{t("landing.footer")}</span>
+          <div className="flex gap-4">{isAuthenticated ? <Link to="/dashboard" className="hover:text-fg">{t("landing.openSpace")}</Link> : <><Link to="/login" className="hover:text-fg">{t("landing.login")}</Link><Link to="/register" className="hover:text-fg">{t("landing.start")}</Link></>}</div>
+        </div>
+      </footer>
     </main>
   );
 }

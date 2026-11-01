@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
-import { Building2, ShieldCheck, UserPlus, Users } from "lucide-react";
+import { Building2, CreditCard, ShieldCheck, UserPlus, Users } from "lucide-react";
 import { errorMessage } from "../../lib/api";
 import type { Plan, UserRole } from "../../lib/auth";
 import { formatDate } from "../../lib/format";
@@ -20,6 +20,7 @@ import {
   useAdminOrganizationsQuery,
   useCreateAdminUserMutation,
   useAdminOverviewQuery,
+  useAdminRevenueQuery,
   useAdminUserQuery,
   useAdminUsersQuery,
   useUpdateUserPlanMutation,
@@ -35,6 +36,7 @@ function roleKey(role: string): TranslationKey {
 
 function planLabelKey(plan: string): TranslationKey {
   if (plan === "PRO") return "settings.plan.pro";
+  if (plan === "PREMIUM") return "settings.plan.premium";
   if (plan === "ORGANIZATION") return "settings.plan.organization";
   return "settings.plan.free";
 }
@@ -91,6 +93,7 @@ export function AdminPage() {
   }, [orgSearch]);
 
   const overviewQuery = useAdminOverviewQuery();
+  const revenueQuery = useAdminRevenueQuery();
   const usersQuery = useAdminUsersQuery({
     query: query || undefined,
     plan: planFilter || undefined,
@@ -111,6 +114,7 @@ export function AdminPage() {
   const planOptions: SelectOption[] = [
     { value: "FREE", label: t("settings.plan.free") },
     { value: "PRO", label: t("settings.plan.pro") },
+    { value: "PREMIUM", label: t("settings.plan.premium") },
     { value: "ORGANIZATION", label: t("settings.plan.organization") },
   ];
   const roleOptions: SelectOption[] = PLATFORM_ROLES.map((role) => ({
@@ -194,6 +198,12 @@ export function AdminPage() {
       {overview && (
         <>
           <section aria-label={t("admin.kpi.section")} className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {revenueQuery.data && (
+              <>
+                <Kpi label={t("admin.kpi.revenue")} value={revenueQuery.data.paidAmountCents / 100} icon={<CreditCard className="h-5 w-5" aria-hidden="true" />} />
+                <Kpi label={t("admin.kpi.payments")} value={revenueQuery.data.paidTransactions} icon={<CreditCard className="h-5 w-5" aria-hidden="true" />} />
+              </>
+            )}
             <Kpi label={t("admin.kpi.users")} value={overview.totalUsers} icon={<Users className="h-5 w-5" aria-hidden="true" />} />
             <Kpi label={t("admin.kpi.newUsers")} value={overview.newUsersLast30Days} icon={<Users className="h-5 w-5" aria-hidden="true" />} />
             <Kpi label={t("admin.kpi.admins")} value={overview.platformAdmins} icon={<ShieldCheck className="h-5 w-5" aria-hidden="true" />} />

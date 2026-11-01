@@ -5,6 +5,7 @@ import java.util.List;
 public enum Plan {
     FREE(10, List.of("10 analyses CV / mois", "CRM complet", "Exports CSV")),
     PRO(100, List.of("100 analyses CV / mois", "Exports illimités", "Préparation d'entretien")),
+    PREMIUM(300, List.of("300 analyses CV / mois", "Exports illimités", "Préparation avancée", "Support prioritaire")),
     ORGANIZATION(50, List.of("50 analyses CV / mois", "Espace organisation", "Indicateurs agrégés"));
 
     private final int cvAnalysisLimit;

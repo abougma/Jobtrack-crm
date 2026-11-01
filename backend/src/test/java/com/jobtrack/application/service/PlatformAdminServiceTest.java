@@ -54,6 +54,7 @@ class PlatformAdminServiceTest {
         when(applications.count()).thenReturn(120L);
         when(plans.countByPlan(Plan.FREE)).thenReturn(30L);
         when(plans.countByPlan(Plan.PRO)).thenReturn(10L);
+        when(plans.countByPlan(Plan.PREMIUM)).thenReturn(0L);
         when(plans.countByPlan(Plan.ORGANIZATION)).thenReturn(2L);
 
         PlatformAdminService.OverviewView overview = service.overview();
@@ -66,7 +67,7 @@ class PlatformAdminServiceTest {
         assertThat(overview.totalApplications()).isEqualTo(120);
         assertThat(overview.usersByPlan())
                 .extracting(PlatformAdminService.PlanMetric::users)
-                .containsExactly(30L, 10L, 2L);
+                .containsExactly(30L, 10L, 0L, 2L);
     }
 
     @Test

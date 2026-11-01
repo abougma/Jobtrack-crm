@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,11 +46,13 @@ public class PlatformAdminService {
     private final MembershipRepository memberships;
     private final ApplicationRepository applications;
     private final PasswordHasher passwordHasher;
+    private final PaymentService payments;
 
+    @Autowired
     public PlatformAdminService(UserRepository users, UserProfileRepository profiles,
                                 UserPlanRepository plans, OrganizationRepository organizations,
                                 MembershipRepository memberships, ApplicationRepository applications,
-                                PasswordHasher passwordHasher) {
+                                PasswordHasher passwordHasher, PaymentService payments) {
         this.users = users;
         this.profiles = profiles;
         this.plans = plans;
@@ -57,6 +60,14 @@ public class PlatformAdminService {
         this.memberships = memberships;
         this.applications = applications;
         this.passwordHasher = passwordHasher;
+        this.payments = payments;
+    }
+
+    public PlatformAdminService(UserRepository users, UserProfileRepository profiles,
+                                UserPlanRepository plans, OrganizationRepository organizations,
+                                MembershipRepository memberships, ApplicationRepository applications,
+                                PasswordHasher passwordHasher) {
+        this(users, profiles, plans, organizations, memberships, applications, passwordHasher, null);
     }
 
     @Transactional(readOnly = true)
@@ -157,6 +168,14 @@ public class PlatformAdminService {
         return organizations.search(query, pageable)
                 .map(organization -> new AdminOrganizationView(organization.id(), organization.name(),
                         memberships.countByOrganizationId(organization.id()), organization.createdAt()));
+    }
+
+    @Transactional(readOnly = true)
+    public PaymentService.RevenueView revenue() {
+        if (payments == null) {
+            return new PaymentService.RevenueView(0, 0, 0);
+        }
+        return payments.revenue();
     }
 
     private User requireUser(UUID userId) {
