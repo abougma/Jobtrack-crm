@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: 247 248 252;
+    --surface: 255 255 255;
+    --elevated: 251 252 254;
+    --border: 226 231 240;
+    --fg: 25 34 55;
+    --muted: 104 117 138;
+    --chart-1: #4f5bd5;
+    --chart-2: #f0a94b;
+    --chart-3: #2f9e8f;
+    --chart-4: #b45bc4;
+    --chart-5: #e06c75;
+    --chart-grid: #e7ebf3;
+  }
+
+  .dark {
+    --bg: 15 23 42;
+    --surface: 23 33 54;
+    --elevated: 30 41 64;
+    --border: 48 61 88;
+    --fg: 236 240 248;
+    --muted: 154 166 189;
+    --chart-1: #8b95ff;
+    --chart-2: #f3b968;
+    --chart-3: #4cc4b0;
+    --chart-4: #cf7ade;
+    --chart-5: #f08a92;
+    --chart-grid: #2c3a58;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-bg font-sans text-fg antialiased;
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2 ring-offset-bg;
+  }
+
+  ::selection {
+    @apply bg-primary-200 text-primary-900;
+  }
+
+  .dark ::selection {
+    @apply bg-primary-700 text-white;
+  }
+}
+
+@layer components {
+  .card-base {
+    @apply rounded-2xl border border-border bg-surface shadow-card;
+  }
+
+  .surface-input {
+    @apply w-full rounded-lg border border-border bg-elevated px-3 py-2 text-sm text-fg placeholder:text-muted focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/25 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-primary-600 focus:px-4 focus:py-2 focus:text-white;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-jobtrack}
+      POSTGRES_USER: ${POSTGRES_USER:-jobtrack}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-jobtrack-dev-only}
+    ports:
+      - "${POSTGRES_PORT:-15432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      SERVER_PORT: 8080
+      DATABASE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-jobtrack}
+      DATABASE_USERNAME: ${POSTGRES_USER:-jobtrack}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-jobtrack-dev-only}
+      JWT_SECRET: ${JWT_SECRET:-change-this-secret-to-at-least-32-characters}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+      JOBTRACK_ADMIN_EMAILS: ${JOBTRACK_ADMIN_EMAILS:-}
+    ports:
+      - "${API_PORT:-18080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health | grep -q 'UP'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: ./frontend
+    ports:
+      - "${WEB_PORT:-5173}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: jobtrack-api
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/jobtrack}
+    username: ${DATABASE_USERNAME:jobtrack}
+    password: ${DATABASE_PASSWORD:jobtrack-dev-only}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+  mvc:
+    problemdetails:
+      enabled: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: ${SERVER_PORT:8080}
+
+jobtrack:
+  admin:
+    emails: ${JOBTRACK_ADMIN_EMAILS:}
+  security:
+    jwt-secret: ${JWT_SECRET:change-this-secret-to-at-least-32-characters}
+    access-token-minutes: ${JWT_ACCESS_TOKEN_MINUTES:15}
+    refresh-token-days: ${JWT_REFRESH_TOKEN_DAYS:30}
+    cors-origin: ${CORS_ORIGIN:http://localhost:5173}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+springdoc:
+  api-docs:
+    path: /api/v1/docs
