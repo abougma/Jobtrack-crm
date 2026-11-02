@@ -151,6 +151,9 @@ function IdentityForm() {
     lastName: user?.lastName ?? "",
     headline: user?.headline ?? "",
     location: user?.location ?? "",
+    phone: user?.phone ?? "",
+    linkedinUrl: user?.linkedinUrl ?? "",
+    portfolioUrl: user?.portfolioUrl ?? "",
   });
 
   const update = (field: keyof typeof values) => (event: ChangeEvent<HTMLInputElement>) =>
@@ -164,6 +167,9 @@ function IdentityForm() {
         lastName: values.lastName.trim(),
         headline: values.headline.trim(),
         location: values.location.trim(),
+        phone: values.phone.trim(),
+        linkedinUrl: values.linkedinUrl.trim(),
+        portfolioUrl: values.portfolioUrl.trim(),
       });
       push(t("profile.identity.saved"), "success");
     } catch (error) {
@@ -180,6 +186,7 @@ function IdentityForm() {
       />
       <form onSubmit={submit} className="mt-4 space-y-4">
         <div className="grid gap-3 sm:grid-cols-2">
+          <Input label={t("profile.identity.email")} value={user?.email ?? ""} readOnly containerClassName="sm:col-span-2" />
           <Input
             label={t("profile.identity.firstName")}
             value={values.firstName}
@@ -199,6 +206,9 @@ function IdentityForm() {
             placeholder={t("profile.identity.headlinePlaceholder")}
             containerClassName="sm:col-span-2"
           />
+          <Input label={t("profile.identity.phone")} value={values.phone} onChange={update("phone")} autoComplete="tel" />
+          <Input label={t("profile.identity.linkedin")} value={values.linkedinUrl} onChange={update("linkedinUrl")} type="url" />
+          <Input label={t("profile.identity.portfolio")} value={values.portfolioUrl} onChange={update("portfolioUrl")} type="url" containerClassName="sm:col-span-2" />
           <Input
             label={t("profile.identity.location")}
             value={values.location}

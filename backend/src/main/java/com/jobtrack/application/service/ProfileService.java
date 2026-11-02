@@ -87,14 +87,16 @@ public class ProfileService {
 
     @Transactional
     public Skill addSkill(UUID userId, SkillDraft draft) {
-        return profiles.saveSkill(Skill.create(userId, draft.name().trim(), draft.level(), draft.context()));
+        return profiles.saveSkill(Skill.create(userId, draft.name().trim(), draft.level(), draft.context(),
+                draft.category().trim()));
     }
 
     @Transactional
     public Skill updateSkill(UUID userId, UUID id, SkillDraft draft) {
         Skill skill = profiles.findSkill(id, userId)
                 .orElseThrow(() -> new ApiExceptions.NotFoundException("Compétence introuvable"));
-        return profiles.saveSkill(skill.update(draft.name().trim(), draft.level(), draft.context()));
+        return profiles.saveSkill(skill.update(draft.name().trim(), draft.level(), draft.context(),
+                draft.category().trim()));
     }
 
     @Transactional
@@ -133,6 +135,6 @@ public class ProfileService {
     public record EducationDraft(String institution, String degree, LocalDate startedOn, LocalDate endedOn,
                                  String description) {}
     public record ProjectDraft(String name, String description, String technologies) {}
-    public record SkillDraft(String name, SkillLevel level, SkillContext context) {}
+    public record SkillDraft(String name, SkillLevel level, SkillContext context, String category) {}
     public record LanguageDraft(String name, LanguageLevel level) {}
 }

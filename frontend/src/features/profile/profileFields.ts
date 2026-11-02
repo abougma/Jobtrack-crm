@@ -92,6 +92,7 @@ export const PROFILE_SECTIONS: ProfileSectionConfig[] = [
     emptyKey: "profile.empty.skills",
     fields: [
       { name: "name", labelKey: "profile.skill.name", type: "text", required: true },
+      { name: "category", labelKey: "profile.skill.category", type: "text", required: true },
       {
         name: "level",
         labelKey: "profile.skill.level",

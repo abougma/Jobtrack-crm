@@ -30,6 +30,7 @@ export interface Skill {
   name: string;
   level: SkillLevel;
   context: SkillContext;
+  category: string;
 }
 
 export interface Language {

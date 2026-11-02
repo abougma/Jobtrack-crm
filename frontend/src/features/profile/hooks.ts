@@ -47,6 +47,9 @@ export interface IdentityPayload {
   lastName?: string;
   headline?: string;
   location?: string;
+  phone?: string;
+  linkedinUrl?: string;
+  portfolioUrl?: string;
 }
 
 export function useUpdateIdentityMutation() {

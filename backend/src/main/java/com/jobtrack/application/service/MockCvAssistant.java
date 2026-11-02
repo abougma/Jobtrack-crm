@@ -140,8 +140,12 @@ public class MockCvAssistant implements CvAssistant {
         LinkedHashSet<String> missingInformation = new LinkedHashSet<>(analysis.missingInformation());
         missingInformation.addAll(analysis.missingSkills());
 
-        return new GeneratedCv(UUID.randomUUID(), userId, applicationId, title, null, null, resolvedHeadline, summary,
-                List.copyOf(skills), experiences, projects, educations, List.copyOf(missingInformation),
+        Map<String, List<String>> skillGroups = new LinkedHashMap<>();
+        sortedSkills.forEach(skill -> skillGroups.computeIfAbsent(skill.category(), ignored -> new ArrayList<>())
+                .add(skill.name()));
+        return new GeneratedCv(UUID.randomUUID(), userId, applicationId, title, null, null, null, null, null, null,
+                resolvedHeadline, summary,
+                List.copyOf(skills), skillGroups, experiences, projects, educations, List.copyOf(missingInformation),
                 analysis.score(), java.time.Instant.now());
     }
 

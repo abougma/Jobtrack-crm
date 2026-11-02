@@ -158,9 +158,10 @@ public class ProfileController {
     public record SkillRequest(
             @NotBlank @Size(max = 100) String name,
             @NotNull SkillLevel level,
-            @NotNull SkillContext context) {
+            @NotNull SkillContext context,
+            @NotBlank @Size(max = 100) String category) {
         ProfileService.SkillDraft toDraft() {
-            return new ProfileService.SkillDraft(name, level, context);
+            return new ProfileService.SkillDraft(name, level, context, category);
         }
     }
 

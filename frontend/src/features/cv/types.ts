@@ -36,9 +36,14 @@ export interface GeneratedCv {
   title: string;
   fullName: string | null;
   location: string | null;
+  email?: string | null;
+  phone?: string | null;
+  linkedinUrl?: string | null;
+  portfolioUrl?: string | null;
   headline: string | null;
   summary: string | null;
   skills: string[];
+  skillGroups?: Record<string, string[]>;
   experiences: CvExperience[];
   projects: CvProject[];
   educations: CvEducation[];

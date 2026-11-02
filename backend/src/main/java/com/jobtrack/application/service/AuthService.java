@@ -34,12 +34,14 @@ public class AuthService {
     private final AccessTokenIssuer accessTokens;
     private final UserService userService;
     private final AdminAllowlist adminAllowlist;
+    private final EmailService emailService;
     private final long refreshTokenDays;
 
     public AuthService(UserRepository users, UserProfileRepository profiles, UserPlanRepository plans,
                        RefreshTokenRepository refreshTokens, PasswordHasher passwordHasher,
                        TokenGenerator tokenGenerator, AccessTokenIssuer accessTokens,
                        UserService userService, AdminAllowlist adminAllowlist,
+                       EmailService emailService,
                        @Value("${jobtrack.security.refresh-token-days}") long refreshTokenDays) {
         this.users = users;
         this.profiles = profiles;
@@ -50,6 +52,7 @@ public class AuthService {
         this.accessTokens = accessTokens;
         this.userService = userService;
         this.adminAllowlist = adminAllowlist;
+        this.emailService = emailService;
         this.refreshTokenDays = refreshTokenDays;
     }
 
@@ -66,6 +69,7 @@ public class AuthService {
         user = users.save(user);
         profiles.save(UserProfile.empty(user.id()));
         plans.save(UserPlan.create(user.id()));
+        emailService.sendWelcome(user.email());
         return issueTokens(user);
     }
 

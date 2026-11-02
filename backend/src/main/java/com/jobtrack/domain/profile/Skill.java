@@ -7,13 +7,30 @@ public record Skill(
         UUID userId,
         String name,
         SkillLevel level,
-        SkillContext context) {
+        SkillContext context,
+        String category) {
+
+    public Skill {
+        category = category == null || category.isBlank() ? "Autres" : category.trim();
+    }
+
+    public Skill(UUID id, UUID userId, String name, SkillLevel level, SkillContext context) {
+        this(id, userId, name, level, context, "Autres");
+    }
 
     public static Skill create(UUID userId, String name, SkillLevel level, SkillContext context) {
-        return new Skill(UUID.randomUUID(), userId, name, level, context);
+        return create(userId, name, level, context, "Autres");
+    }
+
+    public static Skill create(UUID userId, String name, SkillLevel level, SkillContext context, String category) {
+        return new Skill(UUID.randomUUID(), userId, name, level, context, category);
     }
 
     public Skill update(String name, SkillLevel level, SkillContext context) {
-        return new Skill(id, userId, name, level, context);
+        return update(name, level, context, category);
+    }
+
+    public Skill update(String name, SkillLevel level, SkillContext context, String category) {
+        return new Skill(id, userId, name, level, context, category);
     }
 }

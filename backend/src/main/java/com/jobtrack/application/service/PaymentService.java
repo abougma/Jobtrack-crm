@@ -30,17 +30,20 @@ public class PaymentService {
     private final String secretKey;
     private final String webhookSecret;
     private final String frontendUrl;
+    private final EmailService emailService;
 
     public PaymentService(SpringPaymentRepository payments, UserRepository users, UserPlanRepository plans,
                           @Value("${jobtrack.stripe.secret-key:}") String secretKey,
                           @Value("${jobtrack.stripe.webhook-secret:}") String webhookSecret,
-                          @Value("${jobtrack.security.cors-origin:http://localhost:5173}") String frontendUrl) {
+                          @Value("${jobtrack.security.cors-origin:http://localhost:5173}") String frontendUrl,
+                          EmailService emailService) {
         this.payments = payments;
         this.users = users;
         this.plans = plans;
         this.secretKey = secretKey;
         this.webhookSecret = webhookSecret;
         this.frontendUrl = frontendUrl;
+        this.emailService = emailService;
     }
 
     public CheckoutView createCheckout(UUID userId, Plan plan) {
@@ -103,10 +106,15 @@ public class PaymentService {
             UUID id = UUID.fromString(userId);
             UserPlan current = plans.findById(id).orElseGet(() -> UserPlan.create(id));
             plans.save(current.changePlan(plan));
-            payments.findByStripeSessionId(sessionId)
-                    .ifPresent(payment -> payments.save(new PaymentJpaEntity(payment.getId(), payment.getUserId(),
+            payments.findByStripeSessionId(sessionId).ifPresent(payment -> {
+                boolean newlyPaid = !"PAID".equals(payment.getStatus());
+                payments.save(new PaymentJpaEntity(payment.getId(), payment.getUserId(),
                             payment.getPlan(), payment.getAmountCents(), payment.getCurrency(),
-                            payment.getStripeSessionId(), "PAID", payment.getCreatedAt(), Instant.now())));
+                            payment.getStripeSessionId(), "PAID", payment.getCreatedAt(), Instant.now()));
+                if (newlyPaid) {
+                    users.findById(id).ifPresent(user -> emailService.sendSubscriptionConfirmation(user.email(), plan));
+                }
+            });
         } catch (Exception exception) {
             throw new ApiExceptions.BadRequestException("Webhook Stripe invalide.");
         }

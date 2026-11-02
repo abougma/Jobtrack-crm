@@ -197,6 +197,14 @@ POST  /api/v1/payments/stripe/webhook # Stripe checkout.session.completed
 | `JOBTRACK_ADMIN_EMAILS` | vide | E-mails promus `PLATFORM_ADMIN` (liste séparée par des virgules) |
 | `STRIPE_SECRET_KEY` | vide | Clé secrète Stripe (`sk_test_...` en développement) |
 | `STRIPE_WEBHOOK_SECRET` | vide | Secret de signature du webhook Stripe (`whsec_...`) |
+| `MAIL_ENABLED` | `false` | Active les notifications e-mail |
+| `MAIL_HOST` | vide | Hôte SMTP, par exemple `sandbox.smtp.mailtrap.io` |
+| `MAIL_PORT` | `2525` | Port SMTP |
+| `MAIL_USERNAME` | vide | Identifiant SMTP Mailtrap |
+| `MAIL_PASSWORD` | vide | Mot de passe SMTP Mailtrap |
+| `MAIL_FROM` | `noreply@jobtrack.local` | Adresse d'expédition |
+| `MAIL_SMTP_AUTH` | `true` | Active l'authentification SMTP |
+| `MAIL_SMTP_STARTTLS` | `true` | Active STARTTLS |
 
 ## Structure du dépôt
 
@@ -216,5 +224,7 @@ docs/       Contrat d'API et architecture
   consulter les paiements confirmés, les paiements en attente et le chiffre
   d'affaires encaissé. Cette attribution manuelle est prévue pour le support et
   ne constitue pas une preuve de paiement.
-- Les notifications (e-mail, push) ne sont pas envoyées ; les rappels sont
-  consultés dans l'application.
+- Les e-mails transactionnels sont désactivés par défaut. Lorsque `MAIL_ENABLED=true`
+  et les paramètres SMTP sont renseignés, un e-mail est envoyé à la création du
+  compte et après confirmation du paiement d'un abonnement par le webhook Stripe.
+  Les erreurs SMTP sont journalisées sans annuler l'inscription ou le paiement.

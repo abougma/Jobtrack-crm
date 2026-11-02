@@ -13,14 +13,19 @@ public class UserProfileJpaEntity {
     @Column(name = "last_name") private String lastName;
     private String headline;
     private String location;
+    private String phone;
+    @Column(name = "linkedin_url") private String linkedinUrl;
+    @Column(name = "portfolio_url") private String portfolioUrl;
     @Column(name = "updated_at", nullable = false) private Instant updatedAt;
 
     protected UserProfileJpaEntity() {}
 
     public UserProfileJpaEntity(UUID userId, String firstName, String lastName, String headline,
-                                String location, Instant updatedAt) {
+                                String location, String phone, String linkedinUrl, String portfolioUrl,
+                                Instant updatedAt) {
         this.userId = userId; this.firstName = firstName; this.lastName = lastName;
-        this.headline = headline; this.location = location; this.updatedAt = updatedAt;
+        this.headline = headline; this.location = location; this.phone = phone;
+        this.linkedinUrl = linkedinUrl; this.portfolioUrl = portfolioUrl; this.updatedAt = updatedAt;
     }
 
     public UUID getUserId() { return userId; }
@@ -28,5 +33,8 @@ public class UserProfileJpaEntity {
     public String getLastName() { return lastName; }
     public String getHeadline() { return headline; }
     public String getLocation() { return location; }
+    public String getPhone() { return phone; }
+    public String getLinkedinUrl() { return linkedinUrl; }
+    public String getPortfolioUrl() { return portfolioUrl; }
     public Instant getUpdatedAt() { return updatedAt; }
 }

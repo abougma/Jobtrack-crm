@@ -23,12 +23,14 @@ final class DomainMapper {
 
     static UserProfile toDomain(UserProfileJpaEntity entity) {
         return new UserProfile(entity.getUserId(), entity.getFirstName(), entity.getLastName(),
-                entity.getHeadline(), entity.getLocation(), entity.getUpdatedAt());
+                entity.getHeadline(), entity.getLocation(), entity.getPhone(), entity.getLinkedinUrl(),
+                entity.getPortfolioUrl(), entity.getUpdatedAt());
     }
 
     static UserProfileJpaEntity toEntity(UserProfile profile) {
         return new UserProfileJpaEntity(profile.userId(), profile.firstName(), profile.lastName(),
-                profile.headline(), profile.location(), profile.updatedAt());
+                profile.headline(), profile.location(), profile.phone(), profile.linkedinUrl(),
+                profile.portfolioUrl(), profile.updatedAt());
     }
 
     static RefreshToken toDomain(RefreshTokenJpaEntity entity) {
@@ -138,11 +140,13 @@ final class DomainMapper {
     }
 
     static Skill toDomain(ProfileSkillJpaEntity entity) {
-        return new Skill(entity.getId(), entity.getUserId(), entity.getName(), entity.getLevel(), entity.getContext());
+        return new Skill(entity.getId(), entity.getUserId(), entity.getName(), entity.getLevel(), entity.getContext(),
+                entity.getCategory());
     }
 
     static ProfileSkillJpaEntity toEntity(Skill skill) {
-        return new ProfileSkillJpaEntity(skill.id(), skill.userId(), skill.name(), skill.level(), skill.context());
+        return new ProfileSkillJpaEntity(skill.id(), skill.userId(), skill.name(), skill.level(), skill.context(),
+                skill.category());
     }
 
     static Language toDomain(ProfileLanguageJpaEntity entity) {

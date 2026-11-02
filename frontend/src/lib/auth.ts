@@ -9,6 +9,9 @@ export interface AuthUser {
   lastName: string | null;
   headline: string | null;
   location: string | null;
+  phone?: string | null;
+  linkedinUrl?: string | null;
+  portfolioUrl?: string | null;
   plan: Plan | string;
   createdAt?: string;
 }

@@ -14,11 +14,14 @@ public class ProfileSkillJpaEntity {
     @Column(nullable = false) private String name;
     @Enumerated(EnumType.STRING) @Column(nullable = false, length = 32) private SkillLevel level;
     @Enumerated(EnumType.STRING) @Column(nullable = false, length = 32) private SkillContext context;
+    @Column(length = 100) private String category;
 
     protected ProfileSkillJpaEntity() {}
 
-    public ProfileSkillJpaEntity(UUID id, UUID userId, String name, SkillLevel level, SkillContext context) {
+    public ProfileSkillJpaEntity(UUID id, UUID userId, String name, SkillLevel level, SkillContext context,
+                                 String category) {
         this.id = id; this.userId = userId; this.name = name; this.level = level; this.context = context;
+        this.category = category;
     }
 
     public UUID getId() { return id; }
@@ -26,4 +29,5 @@ public class ProfileSkillJpaEntity {
     public String getName() { return name; }
     public SkillLevel getLevel() { return level; }
     public SkillContext getContext() { return context; }
+    public String getCategory() { return category; }
 }

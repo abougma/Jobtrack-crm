@@ -29,12 +29,16 @@ public class UserController {
                                @Valid @RequestBody ProfileRequest request) {
         return UserResponse.from(service.updateProfile(UUID.fromString(userId),
                 new UserService.ProfileUpdate(request.firstName(), request.lastName(),
-                        request.headline(), request.location())));
+                        request.headline(), request.location(), request.phone(),
+                        request.linkedinUrl(), request.portfolioUrl())));
     }
 
     public record ProfileRequest(
             @Size(max = 100) String firstName,
             @Size(max = 100) String lastName,
             @Size(max = 255) String headline,
-            @Size(max = 255) String location) {}
+            @Size(max = 255) String location,
+            @Size(max = 50) String phone,
+            @Size(max = 255) String linkedinUrl,
+            @Size(max = 255) String portfolioUrl) {}
 }

@@ -40,7 +40,8 @@ public class UserService {
                 .orElseThrow(() -> new ApiExceptions.NotFoundException("Utilisateur introuvable"));
         UserProfile profile = profiles.findById(userId).orElseGet(() -> UserProfile.empty(userId));
         profiles.save(profile.update(command.firstName(), command.lastName(),
-                command.headline(), command.location()));
+                command.headline(), command.location(), command.phone(), command.linkedinUrl(),
+                command.portfolioUrl()));
         return view(user);
     }
 
@@ -50,11 +51,13 @@ public class UserService {
         Plan plan = plans.findById(user.id()).map(UserPlan::plan).orElse(Plan.FREE);
         return new UserView(user.id(), user.email(), user.role().name(),
                 profile.firstName(), profile.lastName(), profile.headline(), profile.location(),
-                plan.name(), user.createdAt());
+                profile.phone(), profile.linkedinUrl(), profile.portfolioUrl(), plan.name(), user.createdAt());
     }
 
-    public record ProfileUpdate(String firstName, String lastName, String headline, String location) {}
+    public record ProfileUpdate(String firstName, String lastName, String headline, String location,
+                                String phone, String linkedinUrl, String portfolioUrl) {}
 
     public record UserView(UUID id, String email, String role, String firstName, String lastName,
-                           String headline, String location, String plan, Instant createdAt) {}
+                           String headline, String location, String phone, String linkedinUrl,
+                           String portfolioUrl, String plan, Instant createdAt) {}
 }

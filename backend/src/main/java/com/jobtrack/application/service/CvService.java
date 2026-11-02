@@ -20,17 +20,19 @@ public class CvService {
     private final GeneratedCvRepository cvs;
     private final ProfileRepository profiles;
     private final UserProfileRepository userProfiles;
+    private final UserRepository users;
     private final ApplicationRepository applications;
     private final QuotaService quotas;
     private final CvExporter exporter;
 
     public CvService(CvAssistant assistant, GeneratedCvRepository cvs, ProfileRepository profiles,
-                     UserProfileRepository userProfiles, ApplicationRepository applications,
+                     UserProfileRepository userProfiles, UserRepository users, ApplicationRepository applications,
                      QuotaService quotas, CvExporter exporter) {
         this.assistant = assistant;
         this.cvs = cvs;
         this.profiles = profiles;
         this.userProfiles = userProfiles;
+        this.users = users;
         this.applications = applications;
         this.quotas = quotas;
         this.exporter = exporter;
@@ -66,10 +68,14 @@ public class CvService {
         CvAnalysis analysis = assistant.analyze(profile, "");
         String headline = userProfiles.findById(userId).map(UserProfile::headline)
                 .filter(value -> value != null && !value.isBlank()).orElse(null);
+        UserProfile userProfile = userProfiles.findById(userId).orElseGet(() -> UserProfile.empty(userId));
+        String email = users.findById(userId).map(com.jobtrack.domain.user.User::email).orElse(null);
         GeneratedCv generated = assistant.generate(userId, null, title.trim(), headline, profile, "", analysis);
         return cvs.save(new GeneratedCv(generated.id(), generated.userId(), generated.applicationId(),
-                generated.title(), fullName.trim(), location == null ? null : location.trim(),
-                generated.headline(), summary.trim(), limit(generated.skills(), 14), limit(generated.experiences(), 5),
+                generated.title(), fullName.trim(), location == null ? null : location.trim(), email,
+                userProfile.phone(), userProfile.linkedinUrl(), userProfile.portfolioUrl(),
+                generated.headline(), summary.trim(), limit(generated.skills(), 14), generated.skillGroups(),
+                limit(generated.experiences(), 5),
                 limit(generated.projects(), 3), limit(generated.educations(), 3), List.of(),
                 generated.score(), generated.createdAt()));
     }
